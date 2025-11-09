@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RoboMed — ربات ریاضی پایه نهم</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<style>
+  :root{
+    --blue:#0d47a1; --light:#e9f3ff; --btn:#1565c0;
+  }
+  body{font-family: Vazir, Arial, sans-serif; background:linear-gradient(135deg,var(--light),#bbdefb); margin:0; padding:20px; color:#023047}
+  .app{max-width:1100px;margin:10px auto}
+  header{display:flex;align-items:center;justify-content:space-between}
+  h1{margin:0;color:var(--blue)}
+  .menu{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px}
+  .menu button{background:var(--btn);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer}
+  .content{margin-top:20px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+  .hidden{display:none}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .col{flex:1;min-width:280px}
+  input[type="text"], textarea, select{width:100%;padding:10px;border-radius:8px;border:1px solid #cfe0ff;font-size:15px}
+  label{display:block;margin:8px 0 6px;font-weight:600}
+  .btn{background:var(--btn);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+  pre{background:#f3f7ff;border-radius:8px;padding:12px;overflow:auto}
+  .example{font-size:13px;color:#666;margin-top:6px}
+  footer{margin-top:18px;text-align:center;color:#555}
+  /* lesson styles */
+  .lesson h2{color:var(--blue);margin-bottom:6px}
+  .lesson .figure{margin:12px 0;padding:10px;border-radius:8px;background:#f7fbff;border:1px solid #e1efff}
+  .steps{background:#f1f9ff;border-radius:8px;padding:12px;margin-top:10px}
+  .kbd{background:#eaf2ff;padding:4px 8px;border-radius:6px;font-family:monospace}
+</style>
+<!-- math.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🤖 RoboMed — ربات ریاضی پایه نهم</h1>
+    <div style="text-align:left">
+      <small>رنگ‌بندی: آبی/سفید • طراحی اپ‌نما</small>
+    </div>
+  </header>
+
+  <div class="menu" role="navigation" aria-label="فصول">
+    <button onclick="show('ch1')">۱️⃣ مجموعه‌ها</button>
+    <button onclick="show('ch2')">۲️⃣ عددهای حقیقی</button>
+    <button onclick="show('ch3')">۳️⃣ استدلال و اثبات</button>
+    <button onclick="show('ch4')">۴️⃣ توان و ریشه</button>
+    <button onclick="show('ch5')">۵️⃣ عبارت‌های جبری</button>
+    <button onclick="show('ch6')">۶️⃣ خط و معادله خط</button>
+    <button onclick="show('ch7')">۷️⃣ عبارت‌های گویا</button>
+    <button onclick="show('ch8')">۸️⃣ حجم و مساحت</button>
+  </div>
+
+  <!-- content -->
+  <div id="ch1" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۱ — مجموعه‌ها (محاسبات)</h2>
+      <div class="row">
+        <div class="col">
+          <label>عملیات مجموعه (A و B را با فاصله وارد کنید)</label>
+          <input id="setA" placeholder="مثال: 1 2 3">
+          <input id="setB" placeholder="مثال: 2 3 4">
+          <label>عملیات</label>
+          <select id="setOp">
+            <option value="union">اجتماع A ∪ B</option>
+            <option value="inter">اشتراک A ∩ B</option>
+            <option value="diff">تفاضل A − B</option>
+          </select>
+          <div style="margin-top:10px">
+            <button class="btn" onclick="doSet()">محاسبه</button>
+          </div>
+          <div id="setOut" style="margin-top:12px"></div>
+        </div>
+
+        <div class="col">
+          <label>تعداد زیرمجموعه‌ها (n)</label>
+          <input id="subN" placeholder="مثال: 5" type="text">
+          <div style="margin-top:10px">
+            <button class="btn" onclick="doSubsets()">محاسبه</button>
+          </div>
+          <div id="subOut" style="margin-top:12px"></div>
+
+          <hr style="margin:12px 0">
+
+          <label>قانون شمول و عدم شمول</label>
+          <div class="example">وارد کنید: A , B , تعداد مشترک (مثال: 12, 8, 5)</div>
+          <input id="incA" placeholder="A">
+          <input id="incB" placeholder="B">
+          <input id="incBoth" placeholder="A ∩ B">
+          <div style="margin-top:10px">
+            <button class="btn" onclick="doInclusion()">محاسبه</button>
+          </div>
+          <div id="incOut" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ch2" class="content hidden">
+    <div class="lesson">
+      <h2>📗 فصل ۲ — عددهای حقیقی (جزوه)</h2>
+      <p>اعداد حقیقی = اعداد گویا ∪ اعداد گنگ. روی محور اعداد نمایش داده می‌شوند.</p>
+      <div class="figure">
+        <strong>قدر مطلق (تعریف)</strong>
+        <div>|x| = { x اگر x ≥ 0, −x اگر x &lt; 0 }</div>
+        <div class="example">مثال‌ها: |−5|=5 ، |3/2|=1.5 ، |√9−4|=|3−4|=1</div>
+      </div>
+      <h3>قانونی که معلم گفت — پیاده‌سازی در ماشین‌حساب</h3>
+      <div>
+        وقتی داخل قدر مطلق ترکیبی از عدد و رادیکال هست: برنامه ابتدا <span class="kbd">root(...)</span> را به صورت عددی محاسبه می‌کند، سپس مقدار کلی عبارت را محاسبه و قدر مطلق می‌گیرد. اگر در حالت مقایسهٔ اندازه لازم باشد (مثال آموزشی)، روال نمونه‌ای گام‌به‌گام نمایش داده می‌شود.
+      </div>
+      <div class="figure" style="margin-top:12px">
+        <img src="" alt="محور اعداد" style="max-width:360px">
+      </div>
+    </div>
+  </div>
+
+  <div id="ch3" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۳ — استدلال و اثبات در هندسه (جزوه)</h2>
+      <p>هم‌نهشتی مثلث‌ها: SSS, SAS, ASA, RHS. برای هر قاعده نمونه و شکل:</p>
+      <div class="figure">
+        <strong>SSS)</strong> اگر سه ضلع دو مثلث برابر باشد → هم‌نهشتی.
+        <br><strong>SAS)</strong> دو ضلع و زاویه بینشان برابر → هم‌نهشتی.
+      </div>
+      <div class="figure" style="margin-top:12px">
+        <!-- simple SVG example -->
+        <svg width="320" height="140" viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="20,120 160,20 300,120" fill="none" stroke="#1565c0" stroke-width="3"/>
+          <text x="150" y="30" font-size="12" text-anchor="middle" fill="#023047">مثلث ABC</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="ch4" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۴ — توان و ریشه (محاسبه)</h2>
+      <div class="row">
+        <div class="col">
+          <label>قانون‌های توان — ورودی: مثال <span class="kbd">a^m / a^n</span></label>
+          <input id="powExpr" placeholder="مثال: 7^3 / 7^5">
+          <div style="margin-top:8px"><button class="btn" onclick="doPower()">نمایش مراحل</button></div>
+          <div id="powOut" style="margin-top:10px"></div>
+        </div>
+        <div class="col">
+          <label>محاسبه ریشه/توان — ورودی قابل قبول: <span class="kbd">root(9)</span> یا <span class="kbd">2^3</span></label>
+          <input id="evalExpr" placeholder="مثال: root(16) + 2^3">
+          <div style="margin-top:8px"><button class="btn" onclick="evalExpr()">محاسبه</button></div>
+          <div id="evalOut" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ch5" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۵ — عبارت‌های جبری (محاسبه)</h2>
+      <label>ساده‌سازی عبارت جبری (مثال: (a+b)^2 یا 2*x + 3*x )</label>
+      <input id="algExpr" placeholder="مثال: (x+2)^2 یا 2*x + 3*x">
+      <div style="margin-top:8px"><button class="btn" onclick="doAlgebra()">ساده‌سازی / گسترش</button></div>
+      <div id="algOut" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="ch6" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۶ — خط و معادله خط (جزوه)</h2>
+      <p>معادلهٔ خط در صفحه: y = m x + b</p>
+      <div class="figure">
+        <strong>شیب m</strong> = (y2 - y1) / (x2 - x1)
+        <div class="example">از دو نقطه (1,2) و (3,6): m = (6-2)/(3-1)=2 → y=2x + b</div>
+      </div>
+      <div class="figure" style="margin-top:10px">
+        <svg width="320" height="160"><line x1="20" y1="140" x2="300" y2="140" stroke="#aaa"/><line x1="20" y1="20" x2="20" y2="140" stroke="#aaa"/><polyline points="20,120 100,60 200,30" fill="none" stroke="#1565c0" stroke-width="2"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="ch7" class="content hidden">
+    <div class="lesson">
+      <h2>📘فصل ۷ — عبارت‌های گویا (محاسبه)</h2>
+      <label>وارد کنید عبارت گویا (مثال: (2/x) + (3/x) )</label>
+      <input id="rationalExpr" placeholder="مثال: 2/x + 3/x">
+      <div style="margin-top:8px"><button class="btn" onclick="doRational()">محاسبه و ساده‌سازی</button></div>
+      <div id="ratOut" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div id="ch8" class="content hidden">
+    <div class="lesson">
+      <h2>📘 فصل ۸ — حجم و مساحت (محاسبه)</h2>
+      <div class="row">
+        <div class="col">
+          <label>حجم استوانه: V = π r² h</label>
+          <input id="cylR" placeholder="شعاع r">
+          <input id="cylH" placeholder="ارتفاع h">
+          <div style="margin-top:8px"><button class="btn" onclick="volCylinder()">محاسبه حجم</button></div>
+          <div id="volOut" style="margin-top:10px"></div>
+        </div>
+        <div class="col">
+          <label>مساحت مستطیل: A = a × b</label>
+          <input id="rectA" placeholder="a">
+          <input id="rectB" placeholder="b">
+          <div style="margin-top:8px"><button class="btn" onclick="areaRect()">محاسبه</button></div>
+          <div id="areaOut" style="margin-top:10px"></div>
+        </div>
+      </div>
+      <hr>
+      <div>
+        <label>احتمال و آمار (فصل ۹ در این فایل: آمار و احتمال)</label>
+        <div class="row">
+          <div class="col">
+            <button class="btn" onclick="probPrompt()">محاسبه احتمال (ساده)</button>
+          </div>
+          <div class="col">
+            <button class="btn" onclick="percentPrompt()">درصد / فراوانی نسبی</button>
+          </div>
+        </div>
+        <div id="statOut" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>نویسنده: محمدحسین صادقی</footer>
+</div>
+
+<script>
+/* helper show */
+function show(id){
+  document.querySelectorAll('.content').forEach(el=>el.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- Chapter 1: sets ---------- */
+function parseSet(s){ return s.trim()===''? new Set(): new Set(s.trim().split(/\s+/)); }
+function setToArray(st){ return Array.from(st).sort((a,b)=>Number(a)-Number(b)); }
+function doSet(){
+  const A = parseSet(document.getElementById('setA').value);
+  const B = parseSet(document.getElementById('setB').value);
+  const op = document.getElementById('setOp').value;
+  let out;
+  if(op==='union'){ out = new Set([...A, ...B]); }
+  else if(op==='inter'){ out = new Set([...A].filter(x=>B.has(x))); }
+  else { out = new Set([...A].filter(x=>!B.has(x))); }
+  document.getElementById('setOut').innerText = 'نتیجه: {' + setToArray(out).join(', ') + '}';
+}
+function doSubsets(){ const n = Number(document.getElementById('subN').value); if(isNaN(n)) return; document.getElementById('subOut').innerText = `تعداد زیرمجموعه‌ها = 2^${n} = ${2**n}`; }
+function doInclusion(){
+  const A = Number(document.getElementById('incA').value);
+  const B = Number(document.getElementById('incB').value);
+  const both = Number(document.getElementById('incBoth').value);
+  if(isNaN(A)||isNaN(B)||isNaN(both)) return;
+  document.getElementById('incOut').innerText = `کل اعضا = ${A + B - both}`;
+}
+
+/* ---------- Chapter 2: absolute (special handling) ---------- */
+/* normalize user expression: root(...), v(...), ^ powers allowed, '/' allowed */
+function normalizeInput(expr){
+  if(!expr) return '';
+  expr = expr.replace(/√/g,'root(').replace(/v\(/g,'root('); // rare
+  // replace root(x) occurrences keep
+  // math.js supports sqrt(x) and ^. We'll normalize root(...) -> sqrt(...)
+  expr = expr.replace(/root\s*\(/g,'sqrt(');
+  // allow ^ as power (mathjs supports ^)
+  return expr;
+}
+
+/* evaluate expression safely with math.js and return numeric value or throw */
+function evalExprValue(expr){
+  const normalized = normalizeInput(expr);
+  // use math.evaluate with number result
+  return math.evaluate(normalized);
+}
+
+/* show step-by-step absolute handling */
+function absCompute(raw){
+  // raw may be something like "|...|" or without bars
+  let inner = raw.trim();
+  if(inner.startsWith('|') && inner.endsWith('|')) inner = inner.slice(1,-1).trim();
+  inner = normalizeInput(inner);
+  let steps = [];
+  steps.push(`عبارت داخل قدر مطلق: ${inner}`);
+  // Try to evaluate numerically
+  try{
+    const numeric = math.evaluate(inner);
+    steps.push(`مقدار عددی عبارت = ${numeric}`);
+    const absv = Math.abs(numeric);
+    steps.push(`قدر مطلق = |${numeric}| = ${absv}`);
+    return {steps, result:absv};
+  }catch(e){
+    // If not fully numeric, try to simplify symbolic with math.simplify
+    try{
+      const simplified = math.simplify(inner).toString();
+      steps.push(`ساده‌شده: ${simplified}`);
+      // try numeric of simplified
+      const num = math.evaluate(simplified);
+      steps.push(`مقدار عددی ساده‌شده = ${num}`);
+      const absv = Math.abs(num);
+      steps.push(`قدر مطلق = |${num}| = ${absv}`);
+      return {steps,result:absv};
+    }catch(err){
+      // fallback: show simplified symbolic absolute form
+      steps.push('نشد مقدار عددی دقیقی محاسبه شود؛ قدر مطلق نمادین نشان داده می‌شود.');
+      return {steps,result:`|${inner}|`};
+    }
+  }
+}
+
+/* UI handler */
+function calculateAbs(){
+  const raw = document.getElementById('absInput').value;
+  if(!raw){ document.getElementById('absResult').innerText='لطفاً عبارت وارد کنید'; return; }
+  const out = absCompute(raw);
+  document.getElementById('absResult').innerHTML = '<div class="steps">' + out.steps.map(s=>'• '+s).join('<br>') + '</div><div style="margin-top:8px">نتیجه: <strong>' + out.result + '</strong></div>';
+}
+
+/* ---------- Chapter 4: power/root ---------- */
+function doPower(){
+  const expr = document.getElementById('powExpr').value.trim();
+  if(!expr){ document.getElementById('powOut').innerText='ورودی لازم است'; return; }
+  // try to parse a^m / a^n
+  // remove spaces
+  const e = expr.replace(/\s+/g,'');
+  const m = e.match(/^(.+)\^([-\d]+)\/(.+)\^([-\d]+)$/);
+  if(m && m[1]===m[3]){
+    const base = m[1], a = Number(m[2]), b = Number(m[4]);
+    const step1 = `${base}^${a} ÷ ${base}^${b} = ${base}^(${a}-${b})`;
+    const step2 = `${base}^${a-b}`;
+    document.getElementById('powOut').innerHTML = `<div class="steps">• ${step1}<br>• نتیجه: ${step2}</div>`;
+    return;
+  }
+  document.getElementById('powOut').innerText = 'قابلیت: a^m / a^n را تحلیل می‌کند. (مثال: 7^3 / 7^5)';
+}
+
+function evalExpr(){
+  const raw = document.getElementById('evalExpr').value.trim();
+  if(!raw){ document.getElementById('evalOut').innerText='ورودی لازم است'; return; }
+  const norm = normalizeInput(raw);
+  try{
+    const val = math.evaluate(norm);
+    document.getElementById('evalOut').innerHTML = `نتیجه: ${val}`;
+  }catch(e){
+    document.getElementById('evalOut').innerText = 'خطا در محاسبه یا فرمت ورودی';
+  }
+}
+
+/* ---------- Chapter 5: algebra ---------- */
+function doAlgebra(){
+  const raw = document.getElementById('algExpr').value.trim();
+  if(!raw){ document.getElementById('algOut').innerText='ورودی لازم است'; return; }
+  try{
+    const simplified = math.simplify(raw).toString();
+    const expanded = math.expand ? math.expand(raw).toString() : simplified;
+    document.getElementById('algOut').innerHTML = `<div>ساده‌شده: ${simplified}</div><div>گسترش: ${expanded}</div>`;
+  }catch(e){
+    document.getElementById('algOut').innerText='خطا در پردازش عبارت جبری';
+  }
+}
+
+/* ---------- Chapter 7: rational ---------- */
+function doRational(){
+  const raw = document.getElementById('rationalExpr').value.trim();
+  if(!raw){ document.getElementById('ratOut').innerText='ورودی لازم است'; return; }
+  try{
+    const simp = math.simplify(raw).toString();
+    document.getElementById('ratOut').innerHTML = `ساده‌شده: ${simp}`;
+  }catch(e){
+    document.getElementById('ratOut').innerText='خطا در پردازش عبارت گویا';
+  }
+}
+
+/* ---------- Chapter 8: volumes/areas & stats ---------- */
+function volCylinder(){
+  const r = Number(document.getElementById('cylR').value);
+  const h = Number(document.getElementById('cylH').value);
+  if(isNaN(r)||isNaN(h)){ document.getElementById('volOut').innerText='ورودی نامعتبر'; return; }
+  const v = Math.PI * r * r * h;
+  document.getElementById('volOut').innerText = `V = π ×${r}² × ${h} = ${v.toFixed(4)}`;
+}
+function areaRect(){
+  const a = Number(document.getElementById('rectA').value);
+  const b = Number(document.getElementById('rectB').value);
+  if(isNaN(a)||isNaN(b)){ document.getElementById('areaOut').innerText='ورودی نامعتبر'; return; }
+  document.getElementById('areaOut').innerText = `A = ${a} × ${b} = ${ (a*b).toFixed(4) }`;
+}
+
+function probPrompt(){
+  const fav = prompt("تعداد حالات مطلوب را وارد کن:");
+  const total = prompt("تعداد حالات ممکن را وارد کن:");
+  if(!fav||!total) return;
+  const p = Number(fav)/Number(total);
+  document.getElementById('statOut').innerText = `احتمال = ${p} = ${fav}/${total}`;
+}
+function percentPrompt(){
+  const part = prompt("تعداد موردنظر:");
+  const whole = prompt("تعداد کل:");
+  if(!part||!whole) return;
+  document.getElementById('statOut').innerText = `درصد = ${ (Number(part)/Number(whole)*100).toFixed(2) }%`;
+}
+
+/* ---------- utility on load ---------- */
+document.addEventListener('DOMContentLoaded',()=>{ show('ch1'); });
+
+</script>
+</body>
+</html>
